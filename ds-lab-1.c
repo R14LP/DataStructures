@@ -35,7 +35,6 @@ void printList(struct node *head)
         printf("data: %d\n", head->data);
         head = head->next;
     }
-    
 }
 
 void printListRecursive(struct node *head)

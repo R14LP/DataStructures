@@ -124,11 +124,14 @@ int main()
             scanf("%d", &insertAtBeginningData);
             insertAtBeginning(&head, insertAtBeginningData);
             break;
+
         case 4:
             int deleteData;
             printf("\nEnter the data you wanna delete: ");
             scanf("%d", &deleteData);
             Deletion(&head, deleteData);
+            break;
+            
         default:
             break;
         }

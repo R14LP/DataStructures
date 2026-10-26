@@ -1,47 +1,86 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct node 
+struct node
 {
     int data;
     struct node *next;
 };
 
-void insertAtEnd(struct node** head, int value)
+void insertAtEnd(struct node **head, int value)
 {
-    struct node *newNode = (struct node *)malloc(sizeof(struct node));
-    if(newNode == NULL)
+    struct node *newNode = malloc(sizeof(struct node));
+    if (newNode == NULL)
         return;
     newNode->data = value;
     newNode->next = NULL;
 
-    if(*head == NULL)
+    if (*head == NULL)
     {
         *head = newNode;
         return;
     }
 
-    struct node *tempNode = *head;
-    while(tempNode->next != NULL)
-    {
-        tempNode = tempNode->next;
-    }
-    tempNode->next = newNode;
+    struct node *current = *head;
+    while (current->next != NULL)
+        current = current->next;
+    current->next = newNode;
 }
 
-void insertAtBeginning(struct node** head, int value)
+void insertAtBeginning(struct node **head, int value)
 {
-    struct node *newNode = (struct node *)malloc(sizeof(struct node));
-    if(newNode == NULL)
+    struct node *newNode = malloc(sizeof(struct node));
+    if (newNode == NULL)
         return;
     newNode->data = value;
     newNode->next = *head;
     *head = newNode;
 }
 
-void printList(struct node* head)
+void insertAfter(struct node *head, int value, int target)
 {
-    while(head != NULL)
+    struct node *current = head;
+    while (current != NULL && current->data != target)
+        current = current->next;
+
+    if (current == NULL)
+        return;
+
+    struct node *newNode = malloc(sizeof(struct node));
+    if (newNode == NULL)
+        return;
+    newNode->data = value;
+    newNode->next = current->next;
+    current->next = newNode;
+}
+
+void deleteNode(struct node **head, int value)
+{
+    struct node *current = *head;
+    struct node *previous = NULL;
+
+    if (current != NULL && current->data == value)
+    {
+        *head = current->next;
+        free(current);
+        return;
+    }
+
+    while (current != NULL && current->data != value)
+    {
+        previous = current;
+        current = current->next;
+    }
+
+    if (current == NULL)
+        return;
+    previous->next = current->next;
+    free(current);
+}
+
+void printList(struct node *head)
+{
+    while (head != NULL)
     {
         printf("%d -> ", head->data);
         head = head->next;
@@ -49,92 +88,73 @@ void printList(struct node* head)
     printf("NULL\n");
 }
 
-void Deletion(struct node** head, int value)
+void freeList(struct node *head)
 {
-    struct node *temp = *head;
-    struct node *prev = NULL;
-
-    if(temp != NULL && temp->data == value)
+    while (head != NULL)
     {
-        *head = temp->next;
-        free(temp);
-        return;
+        struct node *next = head->next;
+        free(head);
+        head = next;
     }
-
-    while (temp != NULL && temp->data != value)
-    {
-        prev = temp;
-        temp = temp->next;
-    }
-
-    if(temp == NULL)
-        return;
-    prev->next = temp->next;
-    free(temp);
 }
 
 int main()
 {
-    int selection = 0;
     struct node *head = NULL;
-    struct node *tail = NULL;
+    int choice = 0;
+    int value;
+    int target;
 
     for (int i = 0; i < 5; i++)
     {
-        struct node *newNode = (struct node *)malloc(sizeof(struct node));
-        
-        printf("\nEnter the %d. data: ", i + 1);
-        scanf("%d", &newNode->data);
-
-        newNode->next = NULL;
-
-        if(head == NULL)
-        {
-            head = newNode;
-            tail = newNode;
-        }else
-        {
-            tail->next = newNode;
-            tail = newNode;
-        }
-        
+        printf("Enter the %d. data: ", i + 1);
+        scanf("%d", &value);
+        insertAtEnd(&head, value);
     }
-    while(selection != -1)
-    {
-        printf("\n(1-printList) (2-insertEnd) (3-insertBeginning) (4-delete)");
-        printf("\nMake your selection: ");
-        scanf("%d", &selection);
 
-        switch (selection)
+    while (choice != -1)
+    {
+        printf("\n(1-print) (2-insertEnd) (3-insertBeginning) (4-insertAfter) (5-delete) (-1-exit)");
+        printf("\nMake your selection: ");
+        scanf("%d", &choice);
+
+        switch (choice)
         {
         case 1:
             printList(head);
             break;
 
         case 2:
-            int insertAtEndData;
-            printf("\nEnter the data you wanna add: ");
-            scanf("%d", &insertAtEndData);
-            insertAtEnd(&head, insertAtEndData);
+            printf("Enter the data you want to add: ");
+            scanf("%d", &value);
+            insertAtEnd(&head, value);
             break;
-        
+
         case 3:
-            int insertAtBeginningData;
-            printf("\nEnter the data you wanna add: ");
-            scanf("%d", &insertAtBeginningData);
-            insertAtBeginning(&head, insertAtBeginningData);
+            printf("Enter the data you want to add: ");
+            scanf("%d", &value);
+            insertAtBeginning(&head, value);
             break;
 
         case 4:
-            int deleteData;
-            printf("\nEnter the data you wanna delete: ");
-            scanf("%d", &deleteData);
-            Deletion(&head, deleteData);
+            printf("Enter the data you want to add: ");
+            scanf("%d", &value);
+            printf("Enter the value to insert after: ");
+            scanf("%d", &target);
+            insertAfter(head, value, target);
             break;
-            
+
+        case 5:
+            printf("Enter the data you want to delete: ");
+            scanf("%d", &value);
+            deleteNode(&head, value);
+            break;
+
         default:
             break;
         }
     }
+
+    freeList(head);
     return 0;
 }

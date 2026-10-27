@@ -37,7 +37,10 @@ void insertAtBeginning(struct node **head, int value)
     if (newNode == NULL)
         return;
     newNode->data = value;
+    newNode->prev = NULL;
     newNode->next = *head;
+    if(*head != NULL)
+        (*head)->prev = newNode;
     *head = newNode;
 }
 
@@ -55,30 +58,31 @@ void insertAfter(struct node *head, int value, int target)
         return;
     newNode->data = value;
     newNode->next = current->next;
+    newNode->prev = current;
+
+    if(current->next != NULL)
+        current->next->prev = newNode;
     current->next = newNode;
 }
 
 void deleteNode(struct node **head, int value)
 {
     struct node *current = *head;
-    struct node *previous = NULL;
-
-    if (current != NULL && current->data == value)
-    {
-        *head = current->next;
-        free(current);
-        return;
-    }
 
     while (current != NULL && current->data != value)
-    {
-        previous = current;
         current = current->next;
-    }
 
     if (current == NULL)
         return;
-    previous->next = current->next;
+    
+    if (current->prev != NULL)
+        current->prev->next = current->next;
+    else
+        *head = current->next;
+    
+    if (current->next != NULL)
+        current->next->prev = current->prev;
+
     free(current);
 }
 
